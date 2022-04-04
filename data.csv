@@ -1,4 +1,4 @@
-team,org,team_size,response_rate,response_count,mean_age,mean_tenure,mean_overconfidence_score,mean_team_history,mean_voice_behavior,mean_team_coordination,mean_team_effectiveness
+team,org,team_size,response_rate,response_count,age,tenure,overconfidence,history,voice_behavior,coordination,effectiveness
 VxWVZXy,qX0d3XD,3,0.67,2,26.0,7.0,4.0,6.5,3.92,3.4,5.3
 OlvA1P1,ml4MwXj,4,0.75,3,25.33,6.0,4.0,12.67,4.72,3.47,6.83
 5xOnMXW,oXoqeP0,3,1.0,3,24.0,4.0,5.67,20.33,3.45,3.47,4.67
