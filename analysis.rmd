@@ -78,3 +78,33 @@ plot(data$mean_team_coordination ~ data$mean_overconfidence_score, data = data)
 abline(lm_voice_coordination)
 ggplot(data, aes(x=mean_team_coordination, y=mean_overconfidence_score)) + geom_point()
 ```
+
+\pagebreak
+
+# Extra Hypotheses
+
+## Hypothesis No. 1 - a
+Hx1a: Team Overconfidence has a negative effect on team Effectiveness
+```{r echo=FALSE}
+lm_overconfidence_effectiveness = lm(formula =  mean_team_effectiveness ~ mean_overconfidence_score, data = data)
+rep.hx1a <- summary(lm_overconfidence_effectiveness)
+print(rep.hx1a)
+plot(data$mean_team_effectiveness ~ data$mean_overconfidence_score, data = data)
+abline(lm_overconfidence_effectiveness)
+ggplot(data, aes(x=mean_team_effectiveness, y=mean_overconfidence_score)) + geom_point()
+```
+
+\pagebreak
+
+## Hypothesis No. 1 - b
+Hx1b: Team Overconfidence has a reverse effect on team Effectiveness mediated by team Coordination
+```{r echo=FALSE}
+data$inter2<-data$mean_overconfidence_score*data$mean_team_coordination
+
+lm_overconfidence_effectiveness_coordination = lm(formula =  mean_team_effectiveness ~ mean_overconfidence_score + mean_team_coordination + inter2, data = data) 
+rep.hx1b <- summary(lm_overconfidence_effectiveness_coordination)
+print(rep.hx1b)
+plot(data$mean_team_effectiveness ~ data$mean_overconfidence_score, data = data)
+abline(lm_overconfidence_effectiveness_coordination)
+ggplot(data, aes(x=mean_team_effectiveness, y=mean_overconfidence_score)) + geom_point()
+```
