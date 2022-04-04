@@ -1,0 +1,80 @@
+---
+title: Data analysis
+output: pdf_document
+---
+This data analysis is conducted using the R language and the data is stored in a .csv file.
+```{r include=FALSE}
+library(GGally)
+library(ggplot2)
+
+```
+
+# Dataset
+```{r echo=FALSE}
+data = read.csv("data.csv")
+
+data
+```
+
+\pagebreak
+
+# General Analysis
+
+
+## Correlogram of core variables
+```{r echo=FALSE}
+core_data <- subset(data, select=-c(team,org,response_rate,response_count))
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+```
+
+\pagebreak
+
+## Multiple Linear Regression of all variables against team effectiveness
+```{r echo=FALSE}
+full_lm <- lm(mean_team_effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+
+\pagebreak
+
+# Hypothesis testing
+
+## Hypothesis No. 1
+H1: Team Overconfidence has a negative effect on team coordination
+```{r echo=FALSE} 
+lm_overconfidence_coordination = lm(formula = mean_overconfidence_score ~ mean_team_coordination, data = data)
+rep.h1 <- summary(lm_overconfidence_coordination)
+
+print(rep.h1)
+
+plot( data$mean_team_coordination ~ data$mean_overconfidence_score, data = data)
+abline(lm_overconfidence_coordination)
+ggplot(data, aes(x=mean_team_coordination, y=mean_overconfidence_score)) + geom_point()
+```
+
+\pagebreak
+
+## Hypothesis No. 2
+H2: Team Overconfidence has a positive effect on team effectiveness
+```{r echo=FALSE}
+lm_effectiveness_coordination = lm(formula = mean_team_effectiveness ~ mean_team_coordination, data = data)
+rep.h2 <- summary(lm_effectiveness_coordination)
+print(rep.h2)
+plot(data$mean_team_effectiveness ~ data$mean_team_coordination, data = data)
+abline(lm_effectiveness_coordination)
+ggplot(data, aes(x=mean_team_effectiveness, y=mean_team_coordination)) + geom_point()
+```
+
+\pagebreak
+
+## Hypothesis No. 3
+H3: Team Overconfidence has a positive effect on team response rate
+```{r echo=FALSE}
+data$inter<-data$mean_overconfidence_score*data$mean_voice_behavior
+lm_voice_coordination = lm(formula = mean_team_coordination ~ mean_overconfidence_score + mean_voice_behavior + inter , data = data)
+rep.h3 <- summary(lm_voice_coordination)
+rep.h3
+plot(data$mean_team_coordination ~ data$mean_overconfidence_score, data = data)
+abline(lm_voice_coordination)
+ggplot(data, aes(x=mean_team_coordination, y=mean_overconfidence_score)) + geom_point()
+```
