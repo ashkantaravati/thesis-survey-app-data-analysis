@@ -9,13 +9,28 @@ library(GGally)
 library(ggplot2)
 
 ```
+Session Info:
+``` {r echo=FALSE}
+sessionInfo()
+```
 
 # Dataset
+## Aggregated data from teams that participated
 ```{r echo=FALSE}
-data = read.csv("data.csv")
+teams = read.csv("teams.csv")
 
-data
+teams
 ```
+
+\pagebreak
+
+## Data from actual survey responses
+```{r echo=FALSE}
+responses = read.csv("responses.csv")
+
+responses
+```
+
 
 \pagebreak
 
@@ -24,7 +39,7 @@ data
 
 ## Correlogram of core variables
 ```{r echo=FALSE}
-core_data <- subset(data, select=-c(team,org,response_rate,response_count))
+core_data <- subset(teams, select=-c(team,org,response_rate,response_count))
 ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
 ```
 
@@ -43,14 +58,14 @@ print(summary(full_lm))
 ## Hypothesis No. 1
 H1: Team Overconfidence has a negative effect on team coordination
 ```{r echo=FALSE} 
-lm_overconfidence_coordination = lm(formula = overconfidence ~ coordination, data = data)
+lm_overconfidence_coordination = lm(formula = overconfidence ~ coordination, data = teams)
 rep.h1 <- summary(lm_overconfidence_coordination)
 
 print(rep.h1)
 
-plot( data$coordination ~ data$overconfidence, data = data)
+plot( teams$coordination ~ teams$overconfidence, data = teams)
 abline(lm_overconfidence_coordination)
-ggplot(data, aes(x=coordination, y=overconfidence)) + geom_point()
+ggplot(teams, aes(x=coordination, y=overconfidence)) + geom_point()
 ```
 
 \pagebreak
@@ -58,26 +73,26 @@ ggplot(data, aes(x=coordination, y=overconfidence)) + geom_point()
 ## Hypothesis No. 2
 H2: Team Overconfidence has a positive effect on team effectiveness
 ```{r echo=FALSE}
-lm_effectiveness_coordination = lm(formula = effectiveness ~ coordination, data = data)
+lm_effectiveness_coordination = lm(formula = effectiveness ~ coordination, data = teams)
 rep.h2 <- summary(lm_effectiveness_coordination)
 print(rep.h2)
-plot(data$effectiveness ~ data$coordination, data = data)
+plot(teams$effectiveness ~ teams$coordination, data = teams)
 abline(lm_effectiveness_coordination)
-ggplot(data, aes(x=effectiveness, y=coordination)) + geom_point()
+ggplot(teams, aes(x=effectiveness, y=coordination)) + geom_point()
 ```
 
 \pagebreak
 
 ## Hypothesis No. 3
-H3: Team Overconfidence has a positive effect on team response rate
+H3: Voice Behavior has a moderator effect on the relationship between overconfidence and team coordination
 ```{r echo=FALSE}
-data$inter<-data$overconfidence*data$voice_behavior
-lm_voice_coordination = lm(formula = coordination ~ overconfidence + voice_behavior + inter , data = data)
+teams$inter<-teams$overconfidence*teams$voice_behavior
+lm_voice_coordination = lm(formula = coordination ~ overconfidence + voice_behavior + inter , data = teams)
 rep.h3 <- summary(lm_voice_coordination)
 rep.h3
-plot(data$coordination ~ data$overconfidence, data = data)
+plot(teams$coordination ~ teams$overconfidence, data = teams)
 abline(lm_voice_coordination)
-ggplot(data, aes(x=coordination, y=overconfidence)) + geom_point()
+ggplot(teams, aes(x=coordination, y=overconfidence)) + geom_point()
 ```
 
 \pagebreak
@@ -87,12 +102,12 @@ ggplot(data, aes(x=coordination, y=overconfidence)) + geom_point()
 ## Hypothesis No. 1 - a
 Hx1a: Team Overconfidence has a negative effect on team Effectiveness
 ```{r echo=FALSE}
-lm_overconfidence_effectiveness = lm(formula =  effectiveness ~ overconfidence, data = data)
+lm_overconfidence_effectiveness = lm(formula =  effectiveness ~ overconfidence, data = teams)
 rep.hx1a <- summary(lm_overconfidence_effectiveness)
 print(rep.hx1a)
-plot(data$effectiveness ~ data$overconfidence, data = data)
+plot(teams$effectiveness ~ teams$overconfidence, data = teams)
 abline(lm_overconfidence_effectiveness)
-ggplot(data, aes(x=effectiveness, y=overconfidence)) + geom_point()
+ggplot(teams, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ```
 
 \pagebreak
@@ -100,12 +115,47 @@ ggplot(data, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ## Hypothesis No. 1 - b
 Hx1b: Team Overconfidence has a reverse effect on team Effectiveness mediated by team Coordination
 ```{r echo=FALSE}
-data$inter2<-data$overconfidence*data$coordination
+teams$inter2<-teams$overconfidence*teams$coordination
 
-lm_overconfidence_effectiveness_coordination = lm(formula =  effectiveness ~ overconfidence + coordination + inter2, data = data) 
+lm_overconfidence_effectiveness_coordination = lm(formula =  effectiveness ~ overconfidence + coordination + inter2, data = teams) 
 rep.hx1b <- summary(lm_overconfidence_effectiveness_coordination)
 print(rep.hx1b)
-plot(data$effectiveness ~ data$overconfidence, data = data)
+plot(teams$effectiveness ~ teams$overconfidence, data = teams)
 abline(lm_overconfidence_effectiveness_coordination)
-ggplot(data, aes(x=effectiveness, y=overconfidence)) + geom_point()
+ggplot(teams, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ```
+
+# Analysis of Internal Reliability
+``` {r include=FALSE}
+library(ltm)
+
+eff_survey <- subset(responses, select=c(eff_q1,eff_q2,eff_q3,eff_q4,eff_q5,eff_q6,eff_q7,eff_q8,eff_q9,eff_q10))
+coord_survey <- subset(responses, select=c(coord_q1,coord_q2,coord_q3,coord_q4,coord_q5))
+voice_survey <- subset(responses, select=c(voice_q1,voice_q2,voice_q3,voice_q4,voice_q5,voice_q6))
+ovconf_survey <- subset(responses, select=c(ovconf_q1h,ovconf_q1l,ovconf_q2h,ovconf_q2l,ovconf_q3h,ovconf_q3l,ovconf_q4h,ovconf_q4l,ovconf_q5h,ovconf_q5l,ovconf_q6h,ovconf_q6l,ovconf_q7h,ovconf_q7l,ovconf_q8h,ovconf_q8l,ovconf_q9h,ovconf_q9l,ovconf_q10h,ovconf_q10l))
+```
+
+Cronbach's Alpha is used to determine the reliability of the survey used for each variable.
+
+## Team Effectiveness
+```{r echo=FALSE}
+cronbach.alpha(eff_survey, CI=TRUE)
+```
+
+## Team Coordination
+```{r echo=FALSE}
+cronbach.alpha(coord_survey, CI=TRUE)
+```
+
+## Team Voice Behavior
+```{r echo=FALSE}
+cronbach.alpha(voice_survey, CI=TRUE)
+```
+
+## Overconfidence
+```{r echo=FALSE}
+cronbach.alpha(ovconf_survey, CI=TRUE)
+```
+
+
+# Conclusion
