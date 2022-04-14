@@ -71,7 +71,7 @@ ggplot(teams, aes(x=coordination, y=overconfidence)) + geom_point()
 \pagebreak
 
 ## Hypothesis No. 2
-H2: Team Overconfidence has a positive effect on team effectiveness
+H2: Team Coordination has a positive effect on team effectiveness
 ```{r echo=FALSE}
 lm_effectiveness_coordination = lm(formula = effectiveness ~ coordination, data = teams)
 rep.h2 <- summary(lm_effectiveness_coordination)
@@ -90,8 +90,9 @@ teams$inter<-teams$overconfidence*teams$voice_behavior
 lm_voice_coordination = lm(formula = coordination ~ overconfidence + voice_behavior + inter , data = teams)
 rep.h3 <- summary(lm_voice_coordination)
 rep.h3
-plot(teams$coordination ~ teams$overconfidence, data = teams)
-abline(lm_voice_coordination)
+plot(teams$coordination ~ teams$overconfidence, data = teams,xlab="Team Coordination", ylab="Team Overconfidence")
+abline(lm(coordination ~ overconfidence,data=teams), col="blue")
+abline(lm_voice_coordination, col="red")
 ggplot(teams, aes(x=coordination, y=overconfidence)) + geom_point()
 ```
 
