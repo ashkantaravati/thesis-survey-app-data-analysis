@@ -32,24 +32,6 @@ responses
 ```
 
 
-\pagebreak
-
-# General Analysis
-
-
-## Correlogram of core variables
-```{r echo=FALSE}
-core_data <- subset(teams, select=-c(team,org,response_rate,response_count))
-ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
-```
-
-\pagebreak
-
-## Multiple Linear Regression of all variables against team effectiveness
-```{r echo=FALSE}
-full_lm <- lm(effectiveness ~ ., data=core_data)
-print(summary(full_lm))
-```
 
 \pagebreak
 
@@ -86,14 +68,15 @@ ggplot(teams, aes(x=effectiveness, y=coordination)) + geom_point()
 ## Hypothesis No. 3
 H3: Voice Behavior has a moderator effect on the relationship between overconfidence and team coordination
 ```{r echo=FALSE}
-teams$inter<-teams$overconfidence*teams$voice_behavior
-lm_voice_coordination = lm(formula = coordination ~ overconfidence + voice_behavior + inter , data = teams)
+inter<-teams$overconfidence*teams$voice_behavior
+teams_voice_interaction = data.frame(teams, inter)
+lm_voice_coordination = lm(formula = coordination ~ overconfidence + voice_behavior + inter , data = teams_voice_interaction)
 rep.h3 <- summary(lm_voice_coordination)
 rep.h3
-plot(teams$coordination ~ teams$overconfidence, data = teams,xlab="Team Coordination", ylab="Team Overconfidence")
-abline(lm(coordination ~ overconfidence,data=teams), col="blue")
+plot(teams_voice_interaction$coordination ~ teams_voice_interaction$overconfidence, data = teams_voice_interaction,xlab="Team Coordination", ylab="Team Overconfidence")
+abline(lm(coordination ~ overconfidence,data=teams_voice_interaction), col="blue")
 abline(lm_voice_coordination, col="red")
-ggplot(teams, aes(x=coordination, y=overconfidence)) + geom_point()
+ggplot(teams_voice_interaction, aes(x=coordination, y=overconfidence)) + geom_point()
 ```
 
 \pagebreak
@@ -116,14 +99,15 @@ ggplot(teams, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ## Hypothesis No. 1 - b
 Hx1b: Team Overconfidence has a reverse effect on team Effectiveness mediated by team Coordination
 ```{r echo=FALSE}
-teams$inter2<-teams$overconfidence*teams$coordination
+inter2<-teams$overconfidence*teams$coordination
+teams_overconfidence_interaction = data.frame(teams, inter2)
 
-lm_overconfidence_effectiveness_coordination = lm(formula =  effectiveness ~ overconfidence + coordination + inter2, data = teams) 
+lm_overconfidence_effectiveness_coordination = lm(formula =  effectiveness ~ overconfidence + coordination + inter2, data = teams_overconfidence_interaction) 
 rep.hx1b <- summary(lm_overconfidence_effectiveness_coordination)
 print(rep.hx1b)
-plot(teams$effectiveness ~ teams$overconfidence, data = teams)
+plot(teams_overconfidence_interaction$effectiveness ~ teams_overconfidence_interaction$overconfidence, data = teams_overconfidence_interaction)
 abline(lm_overconfidence_effectiveness_coordination)
-ggplot(teams, aes(x=effectiveness, y=overconfidence)) + geom_point()
+ggplot(teams_overconfidence_interaction, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ```
 
 # Analysis of Internal Reliability
@@ -156,6 +140,229 @@ cronbach.alpha(voice_survey, CI=TRUE)
 ## Overconfidence
 ```{r echo=FALSE}
 cronbach.alpha(ovconf_survey, CI=TRUE)
+```
+
+\pagebreak
+
+# Multiple Regression Backward Elimination of Variables
+```{r echo=FALSE}
+core_data <- subset(teams, select=-c(team,org,response_rate,response_count))
+
+```
+
+\pagebreak
+
+## Stage 0: All Variables Included
+
+### Initial
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+\pagebreak
+
+### Eliminating Overconfidence
+```{r echo=FALSE}
+core_data_except_overconfidence <- subset(core_data, select=-c(overconfidence))
+all_except_overconfidence <- lm(effectiveness ~ ., data=core_data_except_overconfidence)
+print(summary(all_except_overconfidence))
+```
+\pagebreak
+
+### Eliminating Coordination
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+\pagebreak
+
+### Eliminating Voice Behavior
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
+```
+\pagebreak
+
+### Eliminating History
+```{r echo=FALSE}
+core_data_except_history <- subset(core_data, select=-c(history))
+all_except_history <- lm(effectiveness ~ ., data=core_data_except_history)
+print(summary(all_except_history))
+```
+\pagebreak
+
+### Eliminating Tenure
+```{r echo=FALSE}
+core_data_except_tenure <- subset(core_data, select=-c(tenure))
+all_except_tenure <- lm(effectiveness ~ ., data=core_data_except_tenure)
+print(summary(all_except_tenure))
+```
+\pagebreak
+
+### Eliminating Age
+```{r echo=FALSE}
+core_data_except_age <- subset(core_data, select=-c(age))
+all_except_age <- lm(effectiveness ~ ., data=core_data_except_age)
+print(summary(all_except_age))
+```
+\pagebreak
+
+### Eliminating Team Size
+```{r echo=FALSE}
+core_data_except_team_size <- subset(core_data, select=-c(team_size))
+all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
+print(summary(all_except_team_size))
+```
+
+Coordination and Voice Behavior are the most correlated variables with the Effectiveness, so they are kept.
+Overconfidence is the least correlated with the Effectiveness, so it is eliminated.
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(overconfidence))
+
+```
+
+\pagebreak
+
+## Stage 1: Overconfidence is Eliminated
+
+### Initial
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+\pagebreak
+
+### Eliminating History
+```{r echo=FALSE}
+core_data_except_history <- subset(core_data, select=-c(history))
+all_except_history <- lm(effectiveness ~ ., data=core_data_except_history)
+print(summary(all_except_history))
+```
+\pagebreak
+
+### Eliminating Tenure
+```{r echo=FALSE}
+core_data_except_tenure <- subset(core_data, select=-c(tenure))
+all_except_tenure <- lm(effectiveness ~ ., data=core_data_except_tenure)
+print(summary(all_except_tenure))
+```
+
+\pagebreak
+
+### Eliminating Age
+```{r echo=FALSE}
+core_data_except_age <- subset(core_data, select=-c(age))
+all_except_age <- lm(effectiveness ~ ., data=core_data_except_age)
+print(summary(all_except_age))
+```
+
+\pagebreak
+
+### Eliminating Team Size
+```{r echo=FALSE}
+core_data_except_team_size <- subset(core_data, select=-c(team_size))
+all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
+print(summary(all_except_team_size))
+```
+
+Age has the least correlation with the Effectiveness, so it is eliminated.
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(age))
+
+```
+
+\pagebreak
+
+
+## Stage 2: Age is Eliminated
+
+### Initial
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+\pagebreak
+
+### Eliminating History
+```{r echo=FALSE}
+core_data_except_history <- subset(core_data, select=-c(history))
+all_except_history <- lm(effectiveness ~ ., data=core_data_except_history)
+print(summary(all_except_history))
+```
+\pagebreak
+
+### Eliminating Tenure
+```{r echo=FALSE}
+core_data_except_tenure <- subset(core_data, select=-c(tenure))
+all_except_tenure <- lm(effectiveness ~ ., data=core_data_except_tenure)
+print(summary(all_except_tenure))
+```
+\pagebreak
+
+### Eliminating Team Size
+```{r echo=FALSE}
+core_data_except_team_size <- subset(core_data, select=-c(team_size))
+all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
+print(summary(all_except_team_size))
+```
+
+Team Size seems to have the least correlation with the Effectiveness, so it is eliminated.
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(team_size))
+
+```
+
+\pagebreak
+
+## Stage 3: Team Size is Eliminated
+
+### Initial
+
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+
+\pagebreak
+
+### Eliminating History
+
+```{r echo=FALSE}
+core_data_except_history <- subset(core_data, select=-c(history))
+all_except_history <- lm(effectiveness ~ ., data=core_data_except_history)
+print(summary(all_except_history))
+```
+
+\pagebreak
+
+### Eliminating Tenure
+
+```{r echo=FALSE}
+core_data_except_tenure <- subset(core_data, select=-c(tenure))
+all_except_tenure <- lm(effectiveness ~ ., data=core_data_except_tenure)
+print(summary(all_except_tenure))
+```
+
+The elimination of either History or Tenure seems to reduce the goodness of fit of the model. Therefore both are kept.
+
+\pagebreak
+
+## Resulting Model
+
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+library(equatiomatic)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
 ```
 
 
