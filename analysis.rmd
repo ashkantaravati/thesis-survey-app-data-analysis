@@ -1,41 +1,23 @@
 ---
 title: Thesis Survey Data analysis
-output: pdf_document
+output: 
+  pdf_document:
+    toc: TRUE
 author: Ashkan Taravati
 ---
-This data analysis is conducted using the R language and the data is stored in a .csv file.
 ```{r include=FALSE}
 library(GGally)
 library(ggplot2)
-
-```
-Session Info:
-``` {r echo=FALSE}
-sessionInfo()
-```
-
-# Dataset
-## Aggregated data from teams that participated
-```{r echo=FALSE}
+library(equatiomatic)
 teams = read.csv("teams.csv")
-
-teams
-```
-
-\pagebreak
-
-## Data from actual survey responses
-```{r echo=FALSE}
 responses = read.csv("responses.csv")
-
-responses
 ```
 
 
 
 \pagebreak
 
-# Hypothesis testing
+# Hypothesis Testing
 
 ## Hypothesis No. 1
 H1: Team Overconfidence has a negative effect on team coordination
@@ -109,6 +91,7 @@ plot(teams_overconfidence_interaction$effectiveness ~ teams_overconfidence_inter
 abline(lm_overconfidence_effectiveness_coordination)
 ggplot(teams_overconfidence_interaction, aes(x=effectiveness, y=overconfidence)) + geom_point()
 ```
+\pagebreak
 
 # Analysis of Internal Reliability
 ``` {r include=FALSE}
@@ -150,7 +133,12 @@ core_data <- subset(teams, select=-c(team,org,response_rate,response_count))
 
 ```
 
-\pagebreak
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
+```
+
 
 ## Stage 0: All Variables Included
 
@@ -216,8 +204,10 @@ core_data_except_team_size <- subset(core_data, select=-c(team_size))
 all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
 print(summary(all_except_team_size))
 ```
+\pagebreak
 
-Coordination and Voice Behavior are the most correlated variables with the Effectiveness, so they are kept.
+### Outcome
+
 Overconfidence is the least correlated with the Effectiveness, so it is eliminated.
 
 ```{r echo=FALSE}
@@ -225,6 +215,11 @@ core_data <- subset(core_data, select=-c(overconfidence))
 
 ```
 
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
+```
 \pagebreak
 
 ## Stage 1: Overconfidence is Eliminated
@@ -235,6 +230,25 @@ ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
 full_lm <- lm(effectiveness ~ ., data=core_data)
 print(summary(full_lm))
 ```
+
+\pagebreak
+
+### Eliminating Coordination
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+
+\pagebreak
+
+### Eliminating Voice Behavior
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
+```
+
 \pagebreak
 
 ### Eliminating History
@@ -269,6 +283,9 @@ core_data_except_team_size <- subset(core_data, select=-c(team_size))
 all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
 print(summary(all_except_team_size))
 ```
+\pagebreak
+
+### Outcome
 
 Age has the least correlation with the Effectiveness, so it is eliminated.
 
@@ -276,7 +293,11 @@ Age has the least correlation with the Effectiveness, so it is eliminated.
 core_data <- subset(core_data, select=-c(age))
 
 ```
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
 
+```
 \pagebreak
 
 
@@ -288,6 +309,25 @@ ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
 full_lm <- lm(effectiveness ~ ., data=core_data)
 print(summary(full_lm))
 ```
+
+\pagebreak
+
+### Eliminating Coordination
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+
+\pagebreak
+
+### Eliminating Voice Behavior
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
+```
+
 \pagebreak
 
 ### Eliminating History
@@ -312,11 +352,21 @@ core_data_except_team_size <- subset(core_data, select=-c(team_size))
 all_except_team_size <- lm(effectiveness ~ ., data=core_data_except_team_size)
 print(summary(all_except_team_size))
 ```
+\pagebreak
 
+
+### Outcome
 Team Size seems to have the least correlation with the Effectiveness, so it is eliminated.
 
 ```{r echo=FALSE}
 core_data <- subset(core_data, select=-c(team_size))
+
+optimal_subset <- core_data
+```
+
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
 
 ```
 
@@ -330,6 +380,22 @@ core_data <- subset(core_data, select=-c(team_size))
 ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
 full_lm <- lm(effectiveness ~ ., data=core_data)
 print(summary(full_lm))
+```
+\pagebreak
+### Eliminating Coordination
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+
+\pagebreak
+
+### Eliminating Voice Behavior
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
 ```
 
 \pagebreak
@@ -351,19 +417,199 @@ core_data_except_tenure <- subset(core_data, select=-c(tenure))
 all_except_tenure <- lm(effectiveness ~ ., data=core_data_except_tenure)
 print(summary(all_except_tenure))
 ```
-
-The elimination of either History or Tenure seems to reduce the goodness of fit of the model. Therefore both are kept.
-
 \pagebreak
 
-## Resulting Model
+### Outcome
+
+The elimination of either History or Tenure seems to reduce the goodness of fit of the model. However, eliminating tenure has less negative effect on the model, so it is excluded.
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(tenure))
+
+```
 
 ```{r echo=FALSE}
 final_model <- lm(effectiveness ~ ., data=core_data)
-library(equatiomatic)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
+```
+\pagebreak
+
+
+## Stage 4: Tenure is Eliminated
+
+### Initial
+
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+
+\pagebreak
+
+### Eliminating Coordination
+
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+
+\pagebreak
+### Eliminating Voice Behavior
+
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
+```
+
+\pagebreak
+
+### Eliminating History
+
+```{r echo=FALSE}
+core_data_except_history <- subset(core_data, select=-c(history))
+all_except_history <- lm(effectiveness ~ ., data=core_data_except_history)
+print(summary(all_except_history))
+```
+\pagebreak
+
+### Outcome 
+History has the least correlation with the Effectiveness, so it is eliminated.
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(history))
+
+```
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
 extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
 
 ```
 
+\pagebreak
+
+## Stage 5: History is Eliminated
+
+### Initial
+
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+\pagebreak
+
+### Eliminating Coordination
+
+```{r echo=FALSE}
+core_data_except_coordination <- subset(core_data, select=-c(coordination))
+all_except_coordination <- lm(effectiveness ~ ., data=core_data_except_coordination)
+print(summary(all_except_coordination))
+```
+\pagebreak
+
+### Eliminating Voice Behavior
+
+```{r echo=FALSE}
+core_data_except_voice_behavior <- subset(core_data, select=-c(voice_behavior))
+all_except_voice_behavior <- lm(effectiveness ~ ., data=core_data_except_voice_behavior)
+print(summary(all_except_voice_behavior))
+```
+
+\pagebreak
+
+### Outcome
+
+Eliminating Voice Behavior has less detrimental effect on Adjusted R-Sqaured, so it is eliminated.
+
+
+```{r echo=FALSE}
+core_data <- subset(core_data, select=-c(voice_behavior))
+
+```
+    
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=core_data)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
+```
+\pagebreak
+
+## Stage 6: Voice Behavior is Eliminated
+
+At this point, the model only includes one independant variable which is Coordination.
+
+```{r echo=FALSE}
+ggpairs(core_data,progress=FALSE,title="Pairwise Correlation Matrix")
+full_lm <- lm(effectiveness ~ ., data=core_data)
+print(summary(full_lm))
+```
+
+
+
+\pagebreak
+
+## Results
+
+The table of independant variables in order of their predictive power (highest to lowest) is as follows:
+
+
+| Rank | Variable |
+|------|----------|
+| 1 | Coordination |
+| 2 | Voice Behavior |
+| 3 | History |
+| 4 | Tenure |
+| 5 | Team Size |
+| 6 | Age |
+| 7 | Overconfidence |
+
+
+The optimal model (model with highest adjusted R-Squared) is as follows:
+
+```{r echo=FALSE}
+final_model <- lm(effectiveness ~ ., data=optimal_subset)
+extract_eq(final_model, wrap = TRUE,use_coefs = TRUE)
+
+```
+
+\pagebreak
 
 # Conclusion
+
+
+
+\pagebreak
+
+# Appendix A: Aggregated Data From Teams That Participated
+```{r echo=FALSE}
+
+teams
+```
+
+\pagebreak
+
+# Appendix B: Data From Actual Survey Responses
+```{r echo=FALSE}
+
+responses
+```
+
+
+# Appendix C: R Version
+``` {r echo=FALSE}
+R.version
+```
+
+\pagebreak
+
+
+# Appendix D: R Packages
+``` {r echo=FALSE}
+.packages()
+```
+
+
