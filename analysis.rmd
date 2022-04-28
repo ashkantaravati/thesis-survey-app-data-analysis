@@ -22,7 +22,7 @@ responses = read.csv("responses.csv")
 ## Hypothesis No. 1
 H1: Team Overconfidence has a negative effect on team coordination
 ```{r echo=FALSE} 
-lm_overconfidence_coordination = lm(formula = overconfidence ~ coordination, data = teams)
+lm_overconfidence_coordination = lm(formula = coordination ~ overconfidence, data = teams)
 rep.h1 <- summary(lm_overconfidence_coordination)
 
 print(rep.h1)
@@ -109,6 +109,21 @@ Cronbach's Alpha is used to determine the reliability of the survey used for eac
 ```{r echo=FALSE}
 cronbach.alpha(eff_survey, CI=TRUE)
 ```
+
+### Team Commitment
+```{r echo=FALSE}
+commit_survey <- eff_survey[1:5]
+cronbach.alpha(commit_survey, CI=TRUE)
+
+```
+
+### Team Performance
+```{r echo=FALSE}
+perf_survey <- eff_survey[6:10]
+cronbach.alpha(perf_survey, CI=TRUE)
+
+```
+
 
 ## Team Coordination
 ```{r echo=FALSE}
