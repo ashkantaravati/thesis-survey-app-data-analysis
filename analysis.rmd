@@ -122,6 +122,16 @@ ggplot(teams_voice_interaction, aes(x = coordination, y = overconfidence)) +
 
 \pagebreak
 
+## Hypothesis No. 4
+H4: Team Coordination has a mediator effect on the relationship between overconfidence and team effectiveness
+```{r echo=FALSE}
+summary(lm(formula = effectiveness ~ overconfidence, data = teams))
+summary(lm(formula = coordination ~ overconfidence, data = teams))
+summary(lm(formula = effectiveness ~ overconfidence + coordination, data = teams))
+```
+
+\pagebreak
+
 # Extra Hypotheses
 
 ## Hypothesis No. 1 - a

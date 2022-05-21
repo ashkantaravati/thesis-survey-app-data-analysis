@@ -94,7 +94,12 @@ abline(lm_voice_coordination, col = "red")
 ggplot(teams_voice_interaction, aes(x = coordination, y = overconfidence)) +
   geom_point()
 ```
-
+H4: Team Coordination has a mediator effect on the relationship between overconfidence and team effectiveness
+```{r echo=TRUE}
+summary(lm(formula = effectiveness ~ overconfidence, data = teams))
+summary(lm(formula = coordination ~ overconfidence, data = teams))
+summary(lm(formula = effectiveness ~ overconfidence + coordination, data = teams))
+```
 Hx1a: Team Overconfidence has a negative effect on team Effectiveness
 ```{r echo=TRUE}
 lm_overconfidence_effectiveness <- lm(formula = effectiveness ~ overconfidence, data = teams)
